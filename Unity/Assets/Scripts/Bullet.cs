@@ -5,13 +5,11 @@ public class Bullet : MonoBehaviour
 {
     [SerializeField]
     private float speed = 0.1f;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
 
     }
 
-    // Update is called once per frame
     void Update()
     {
         Movement();
@@ -20,9 +18,17 @@ public class Bullet : MonoBehaviour
     void Movement()
     {
         transform.Translate(Vector2.up * speed);
-        if (transform.position.y >= 6)
+        if (transform.position.y >= 11)
         {
             Destroy(this.gameObject);
         }
+    }
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        Destroy(this.gameObject);
+    }
+    private void OnTriggerStay2D(Collider2D other)
+    {
+        Destroy(this.gameObject);
     }
 }

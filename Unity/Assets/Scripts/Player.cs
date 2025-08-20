@@ -24,12 +24,12 @@ public class Player : MonoBehaviour
     {
         if (Keyboard.current.dKey.IsPressed())
         {
-            if (transform.position.x >= 8.2) { return; }
+            if (transform.position.x >= 16.7) { return; }
             transform.Translate(Vector2.right * speed);
         }
         if (Keyboard.current.aKey.IsPressed())
         {
-            if (transform.position.x <= -8.2) { return; }
+            if (transform.position.x <= -16.7) { return; }
             transform.Translate(Vector2.left * speed);
         }
     }
