@@ -10,7 +10,12 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.shape.Polygon;
 
-public class PrimaryController implements Initializable {
+/**
+ * Classe responsável por intermediar o que acontece 
+ * na interface gráfica e o processamento necessário 
+ * para o funcionamento do jogo.
+ */
+public class GameController implements Initializable {
 
     @FXML
     private Polygon spaceShipShape;
@@ -36,7 +41,7 @@ public class PrimaryController implements Initializable {
         // espera a cena ser criada para adicionar os listeners
         rootPane.sceneProperty().addListener((observable, oldScene, newScene) -> {
             if (newScene != null) {
-                //quando uma tecla é apertada
+
                 newScene.setOnKeyPressed((KeyEvent event) -> {
                     if (event.getCode() == KeyCode.D) {
                         spaceShip.setMovingRight(true);
@@ -49,7 +54,7 @@ public class PrimaryController implements Initializable {
                     }
 
                 });
-                // Quando a tecla é solta
+                
                 newScene.setOnKeyReleased((KeyEvent event) -> {
                     if (event.getCode() == KeyCode.D) {
                         spaceShip.setMovingRight(false);

@@ -11,6 +11,12 @@ import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
 
+/**
+ * Classe responsável por encapsular os inimigos. <p>
+ * Contem todas as propriedades e metodos necessarios para o
+ * funcionamento completo dos comportamentos dos inimigos, como
+ * mover-se continuamente e morrer ao ser atingido por um projetil.
+ */
 public class Enemies {
 
     private final Pane rootPane;
@@ -35,7 +41,9 @@ public class Enemies {
 
         InitializeEnemies();
     }
-
+    /**
+     * Inicializa os inimigos na tela e na lista que os controlará
+     */
     private void InitializeEnemies () {
 
         for (int row = 0; row < ENEMY_ROWS; row++) {
@@ -51,6 +59,14 @@ public class Enemies {
         }
     }
 
+    /**
+     * Cria um inimigo, dada a linha e a coluna nas quais ele se localizará.
+     * 
+     * @param row A linha
+     * @param col A coluna
+     * <p>
+     * @return O inimigo correspondente a essa posicao
+     */
     private Shape CreateEnemy (int row, int col) {
 
         Shape enemy;
@@ -82,6 +98,12 @@ public class Enemies {
         return enemy;
     }
 
+    /**
+     * Método responsável por orquestrar o movimento contínuo dos inimigos:
+     * Mover-se horizontalmente até que o inimigo mais próximo da borda colida com ela.
+     * Após a colisão, inverte-se o sentido do movimento horizontal e incrementa a posicao
+     * vertical de todos os inimigos.
+     */
     public void Move () {
         
         Shape firstenemyToTheLeft = GetFirstEnemyToTheLeft();
@@ -110,7 +132,9 @@ public class Enemies {
     }
 
     
-
+    /**
+     * Procura na lista de inimigos pelo inimigo vivo mais próximo da borda direita da tela.
+     */
     private Shape GetLastEnemyToTheRight() {
 
         Shape enemyToTheRight = null;
@@ -118,7 +142,7 @@ public class Enemies {
         int lastMostToRightPositionInRow = ENEMY_COLS - 1;
 
          /** 
-          * Percorre cada fileira da direita para esqeurda, checando se o inimigo está vivo.
+          * Percorre cada fileira da direita para esquerda, checando se o inimigo está vivo.
           * Caso esteja vivo e esteja mais a direita que o inimigo mais a direita da ultima
           * fileira, se torna o inimigo mais a direita atual.
           * Retorna o ultimo inimigo mais a direita.
@@ -149,6 +173,9 @@ public class Enemies {
         return enemyToTheRight;
     }
 
+    /**
+     * Procura na lista de inimigos pelo inimigo vivo mais próximo da borda esquerda da tela.
+     */
     private Shape GetFirstEnemyToTheLeft() {
 
         Shape enemyToTheLeft = null;

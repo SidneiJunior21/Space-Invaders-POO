@@ -8,6 +8,13 @@ import javafx.scene.layout.Pane;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 
+
+/**
+ * Classe responsável por encapsular a espaconave (jogador). <p>
+ * Contem todas as propriedades e metodos necessarios para o
+ * funcionamento completo dos comportamentos da espaconave, como
+ * mover-se e atirar.
+ */
 public class SpaceShip {
 
     private final Polygon spaceShipShape;
@@ -26,7 +33,7 @@ public class SpaceShip {
 
     private long lastShotTime = 0;
 
-    private final long cooldown = 80_000_000; // 80ms em nanos   
+    private final long shotCooldown = 80_000_000; // 80ms em nanos   
 
     public SpaceShip(Polygon spaceShipShape){
         this.spaceShipShape = spaceShipShape;
@@ -44,7 +51,13 @@ public class SpaceShip {
     public void setIsShooting(boolean status){
         this.isShooting = status;
     }
-
+    
+    /**
+     * Movimenta a espaconave caso seus booleanos de movimento sejam verdadeiros. <p>
+     * Os booleanos são alterados no listener de KeyEvent do controller.
+     * @see
+     *          GameController.initialize 
+     */
     public void Moves (){
 
         double currentX = spaceShipShape.getLayoutX();
@@ -71,9 +84,17 @@ public class SpaceShip {
         }
     }
 
+    /**
+     * Apaga um projétil da tela
+     * @param now
+     *          O timestamp do frame atual em nanosegundos, passado em gameLoop.handle( ). <p>
+     *          Esse valor será o mesmo para todos os AnimationTimers chamados no mesmo frame. <p>
+     * @see 
+     *          GameLoop.handle
+     */
     public void ShootsWithDelay (long now) {
 
-        boolean delayIsRespected = (now - lastShotTime) >= cooldown;
+        boolean delayIsRespected = (now - lastShotTime) >= shotCooldown;
 
         if (isShooting && delayIsRespected){
 
@@ -104,6 +125,9 @@ public class SpaceShip {
         }
     }
 
+    /**
+     * Cria e retorna um projétil padrão
+     */
     private Rectangle CreateProjectile(){
         Rectangle projectile = new Rectangle(5, 15); // largura, altura
         projectile.setStyle("-fx-fill: yellow;");
