@@ -26,7 +26,7 @@ public class SpaceShip {
 
     private long lastShotTime = 0;
 
-    private final long fireDelay = 80_000_000; // 200ms em nanos   
+    private final long cooldown = 80_000_000; // 80ms em nanos   
 
     public SpaceShip(Polygon spaceShipShape){
         this.spaceShipShape = spaceShipShape;
@@ -73,7 +73,7 @@ public class SpaceShip {
 
     public void ShootsWithDelay (long now) {
 
-        boolean delayIsRespected = (now - lastShotTime) >= fireDelay;
+        boolean delayIsRespected = (now - lastShotTime) >= cooldown;
 
         if (isShooting && delayIsRespected){
 

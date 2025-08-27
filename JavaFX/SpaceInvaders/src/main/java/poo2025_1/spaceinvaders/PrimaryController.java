@@ -1,6 +1,8 @@
 package poo2025_1.spaceinvaders;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import javafx.fxml.FXML;
@@ -9,6 +11,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.shape.Polygon;
+import javafx.scene.shape.Shape;
 
 public class PrimaryController implements Initializable {
 
@@ -22,11 +25,9 @@ public class PrimaryController implements Initializable {
 
     private GameLoop gameLoop;
     
-    // private List<Shape> enemies = new ArrayList<>();
-    // private double enemySpeed = 1.0;
-    // private final int ENEMY_ROWS = 5;
-    // private final int ENEMY_COLS = 8;
-    // private int enemyDirection = 1;
+    private List<Shape> enemies = new ArrayList<>();
+    private double enemySpeed = 1.0;
+    private int enemyDirection = 1;
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -69,44 +70,21 @@ public class PrimaryController implements Initializable {
         gameLoop.start();
     }
 
-    // boolean edgeReached = false;
-    // private void EnemiesMovement() {
-    //     for (Shape enemy : enemies) {
-    //         enemy.setLayoutX(enemy.getLayoutX() + (enemySpeed * enemyDirection));
-    //         // if (enemy.getLayoutX() <= 0 || enemy.getLayoutX() >= rootPane.getWidth() - enemy.getBoundsInParent().getWidth()) {
-    //         //     edgeReached = true;
-    //         // }
-    //     }/* 
-    //     if (edgeReached) {
-    //         enemyDirection *= -1;
-    //         for (Shape enemy : enemies) {
-    //         enemy.setLayoutY(enemy.getLayoutY() + 1);
-    //         }
-    //     }*/
-    // }
+    boolean edgeReached = false;
+    private void EnemiesMovement() {
+        for (Shape enemy : enemies) {
+            enemy.setLayoutX(enemy.getLayoutX() + (enemySpeed * enemyDirection));
+            // if (enemy.getLayoutX() <= 0 || enemy.getLayoutX() >= rootPane.getWidth() - enemy.getBoundsInParent().getWidth()) {
+            //     edgeReached = true;
+            // }
+        }/* 
+        if (edgeReached) {
+            enemyDirection *= -1;
+            for (Shape enemy : enemies) {
+            enemy.setLayoutY(enemy.getLayoutY() + 1);
+            }
+        }*/
+    }
         
-    // private void DrawEnemies() {
-    //     double shapeSize = 30;
-    //     for (int row = 0; row < ENEMY_ROWS; row++) {
-    //         for (int col = 0; col < ENEMY_COLS; col++) {
-    //             Shape enemy;
-    //             if (row == 0) {
-    //                 enemy = new Circle(shapeSize / 2, Color.DEEPPINK);
-    //             } else if (row == 1 || row == 2) {
-    //                 enemy = new Rectangle(shapeSize, shapeSize, Color.AQUAMARINE);
-    //             } else {
-    //                 Polygon triangle = new Polygon();
-    //                 triangle.getPoints().addAll(shapeSize / 2, 0.0, 0.0, shapeSize, shapeSize, shapeSize);
-    //                 triangle.setFill(Color.ORANGE);
-    //                 enemy = triangle;
-    //             }
-    //             double x = col * 60 + 50;
-    //             double y = row * 50 + 50;
-    //             enemy.setLayoutX(x);
-    //             enemy.setLayoutY(y);
-    //             rootPane.getChildren().add(enemy);
-    //             enemies.add(enemy);
-    //         }
-    //     }
-    // }
+
 }
