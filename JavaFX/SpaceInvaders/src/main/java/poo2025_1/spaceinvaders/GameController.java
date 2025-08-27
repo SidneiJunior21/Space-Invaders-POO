@@ -2,6 +2,7 @@ package poo2025_1.spaceinvaders;
 
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.io.IOException;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -29,6 +30,18 @@ public class GameController implements Initializable {
 
     private Enemies enemies;
 
+    // Para o loop do jogo atual e recarrega a cena principal
+    public void resetGame() {
+        gameLoop.stop();
+
+        try {
+            // Usa o método estático da classe App para recarregar o FXML
+            App.setRoot("primary");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     @Override
     public void initialize(URL url, ResourceBundle rb) {
 
@@ -36,7 +49,7 @@ public class GameController implements Initializable {
 
         enemies = new Enemies(rootPane);
         
-        gameLoop = new GameLoop(spaceShip, enemies);
+        gameLoop = new GameLoop(spaceShip, enemies, this);
 
         // espera a cena ser criada para adicionar os listeners
         rootPane.sceneProperty().addListener((observable, oldScene, newScene) -> {

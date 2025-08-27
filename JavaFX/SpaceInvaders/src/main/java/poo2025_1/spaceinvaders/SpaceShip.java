@@ -159,6 +159,10 @@ public class SpaceShip {
         }
     }
 
+    public List<Rectangle> getProjectiles() {
+        return this.projectiles;
+    }
+
     /**
      * Apaga um projétil da tela
      * @param projectile
@@ -171,4 +175,13 @@ public class SpaceShip {
         }
     }
 
+    // Verifica se a nave colidiu com algum projétil da lista fornecida
+    public boolean isHitBy(List<Rectangle> enemyProjectiles) {
+        for (Rectangle projectile : enemyProjectiles) {
+            if (projectile.getBoundsInParent().intersects(this.spaceShipShape.getBoundsInParent())) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

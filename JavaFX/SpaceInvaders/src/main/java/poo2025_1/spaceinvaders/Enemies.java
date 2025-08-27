@@ -2,6 +2,7 @@ package poo2025_1.spaceinvaders;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import javafx.geometry.Bounds;
 import javafx.scene.layout.Pane;
@@ -18,6 +19,13 @@ import javafx.scene.shape.Shape;
  * mover-se continuamente e morrer ao ser atingido por um projetil.
  */
 public class Enemies {
+
+    //variaveis novas do papoco
+    private final List<Rectangle> enemyProjectiles;
+    private final double projectileSpeed = 4.0;
+    private long lastEnemyShotTime = 0;
+    private final long enemyShotCooldown = 400_000_000;
+    private final Random random = new Random();
 
     private final Pane rootPane;
 
@@ -38,6 +46,8 @@ public class Enemies {
         this.rootPane = rootPane;
 
         enemyShapes = new ArrayList<>();
+
+        this.enemyProjectiles = new ArrayList<>();
 
         InitializeEnemies();
     }
@@ -131,6 +141,21 @@ public class Enemies {
 
     }
 
+    // Verifica colisões entre projéteis e inimigos
+    public void checkCollisions(List<Rectangle> projectiles) {
+    for (int i = projectiles.size() - 1; i >= 0; i--) {
+        Rectangle projectile = projectiles.get(i);
+        for (int j = enemyShapes.size() - 1; j >= 0; j--) {
+            Shape enemy = enemyShapes.get(j);
+                if (enemy.isVisible() && projectile.getBoundsInParent().intersects(enemy.getBoundsInParent())) {
+                    enemy.setVisible(false);
+                    rootPane.getChildren().remove(projectile);
+                    projectiles.remove(i);                    
+                    break; 
+                }
+            }
+        }
+    }
     
     /**
      * Procura na lista de inimigos pelo inimigo vivo mais próximo da borda direita da tela.
@@ -212,5 +237,68 @@ public class Enemies {
         }
 
         return enemyToTheLeft;
+    }
+
+    // Cria e posiciona um projétil vindo de um inimigo
+    private void createProjectile(Shape enemy) {
+        Rectangle projectile = new Rectangle(5, 15, Color.RED);
+        Bounds enemyBounds = enemy.getBoundsInParent();
+        double startX = enemyBounds.getMinX() + (enemyBounds.getWidth() / 2) - (projectile.getWidth() / 2);
+        double startY = enemyBounds.getMaxY();
+
+        projectile.setLayoutX(startX);
+        projectile.setLayoutY(startY);
+
+        enemyProjectiles.add(projectile);
+        rootPane.getChildren().add(projectile);
+    }
+
+    // Move os projéteis dos inimigos e os remove se saírem da tela
+    public void moveEnemyProjectiles() {
+        Bounds paneBounds = rootPane.getLayoutBounds();
+        for (int i = enemyProjectiles.size() - 1; i >= 0; i--) {
+            Rectangle proj = enemyProjectiles.get(i);
+            proj.setLayoutY(proj.getLayoutY() + projectileSpeed);
+
+            if (proj.getLayoutY() > paneBounds.getHeight()) {
+                rootPane.getChildren().remove(proj);
+                enemyProjectiles.remove(i);
+            }
+        }
+    }
+
+    // Faz um inimigo aleatório atirar
+    public void shoot(long now) {
+        if ((now - lastEnemyShotTime) < enemyShotCooldown) {
+            return;
+        }
+        List<Shape> visibleEnemies = new ArrayList<>();
+        for (Shape enemy : enemyShapes) {
+            if (enemy.isVisible()) {
+                visibleEnemies.add(enemy);
+            }
+        }
+        if (visibleEnemies.isEmpty()) {
+            return;
+        }
+        Shape shooter = visibleEnemies.get(random.nextInt(visibleEnemies.size()));
+        createProjectile(shooter);
+        lastEnemyShotTime = now;
+    }
+
+    public List<Rectangle> getEnemyProjectiles() {
+        return this.enemyProjectiles;
+    }
+
+    //Verifica se todos os inimigos na lista estão invisíveis
+    public boolean areAllEnemiesDefeated() {
+        for (Shape enemy : enemyShapes) {
+            if (enemy.isVisible()) {
+                // Encontrou pelo menos um inimigo vivo, então o jogo não acabou.
+                return false;
+            }
+        }
+        // Se o loop terminar, significa que nenhum inimigo visível foi encontrado.
+        return true;
     }
 }
