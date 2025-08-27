@@ -1,8 +1,6 @@
 package poo2025_1.spaceinvaders;
 
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.ResourceBundle;
 
 import javafx.fxml.FXML;
@@ -11,7 +9,6 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.shape.Polygon;
-import javafx.scene.shape.Shape;
 
 public class PrimaryController implements Initializable {
 
@@ -21,20 +18,20 @@ public class PrimaryController implements Initializable {
     @FXML
     private AnchorPane rootPane; 
 
+    private GameLoop gameLoop;
+
     private SpaceShip spaceShip;
 
-    private GameLoop gameLoop;
-    
-    private List<Shape> enemies = new ArrayList<>();
-    private double enemySpeed = 1.0;
-    private int enemyDirection = 1;
-    
+    private Enemies enemies;
+
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        //DrawEnemies();
+
         spaceShip = new SpaceShip(spaceShipShape);
+
+        enemies = new Enemies(rootPane);
         
-        gameLoop = new GameLoop(spaceShip);
+        gameLoop = new GameLoop(spaceShip, enemies);
 
         // espera a cena ser criada para adicionar os listeners
         rootPane.sceneProperty().addListener((observable, oldScene, newScene) -> {
@@ -69,22 +66,4 @@ public class PrimaryController implements Initializable {
 
         gameLoop.start();
     }
-
-    boolean edgeReached = false;
-    private void EnemiesMovement() {
-        for (Shape enemy : enemies) {
-            enemy.setLayoutX(enemy.getLayoutX() + (enemySpeed * enemyDirection));
-            // if (enemy.getLayoutX() <= 0 || enemy.getLayoutX() >= rootPane.getWidth() - enemy.getBoundsInParent().getWidth()) {
-            //     edgeReached = true;
-            // }
-        }/* 
-        if (edgeReached) {
-            enemyDirection *= -1;
-            for (Shape enemy : enemies) {
-            enemy.setLayoutY(enemy.getLayoutY() + 1);
-            }
-        }*/
-    }
-        
-
 }
