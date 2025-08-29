@@ -16,24 +16,28 @@ public class Bunker extends Entity {
 
     public void handlesGettingShot (List<Projectile> projectiles) {
 
-        List<Projectile> projectilesToRemove = new ArrayList<>();
+        if(isAlive()){
 
-        for (Projectile projectile : projectiles) {
+            List<Projectile> projectilesToRemove = new ArrayList<>();
 
-            boolean collisionHappened = checkCollisionWith(projectile);
+            for (Projectile projectile : projectiles) {
 
-            if (collisionHappened) {
-                hitPoints--;
+                boolean collisionHappened = checkCollisionWith(projectile);
 
-                projectile.handleDeath();
+                if (collisionHappened) {
+                    hitPoints--;
 
-                projectilesToRemove.add(projectile);
+                    projectile.handleDeath();
+
+                    projectilesToRemove.add(projectile);
+                }
             }
+
+            projectiles.removeAll(projectilesToRemove);
+
+            if (hitPoints <= 0)
+                handleDeath();
+                
         }
-
-        projectiles.removeAll(projectilesToRemove);
-
-        if (hitPoints <= 0)
-            handleDeath();
     }
 }
