@@ -1,4 +1,5 @@
 import pygame
+import random
 
 class Entity(pygame.sprite.Sprite):
     def __init__(self):
@@ -78,3 +79,23 @@ class Enemy(Entity):
             pygame.draw.polygon(self.image, "orange", [(15, 0), (0, 30), (30, 30)])
             
         self.rect = self.image.get_rect(topleft=(x, y))
+        
+class Bunker(pygame.sprite.Sprite):
+    def __init__(self, x, y):
+        super().__init__()
+        self.hit_points = 5
+        
+        self.original_image = pygame.Surface((80, 40))
+        self.original_image.fill("green")
+        
+        self.image = self.original_image.copy()
+        self.rect = self.image.get_rect(center=(x, y))
+
+    def take_damage(self):
+        self.hit_points -= 1
+        hole_x = random.randint(5, self.rect.width - 5)
+        hole_y = random.randint(5, self.rect.height - 5)
+        pygame.draw.circle(self.image, "black", (hole_x, hole_y), 4)
+
+        if self.hit_points <= 0:
+            self.kill()

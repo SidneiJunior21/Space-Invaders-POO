@@ -1,5 +1,5 @@
 import pygame
-from sprites import SpaceShip
+from sprites import SpaceShip, Bunker 
 from controller import EnemyController
 
 pygame.init()
@@ -18,8 +18,15 @@ while running:
     player = SpaceShip(SCREEN_WIDTH, SCREEN_HEIGHT, all_sprites)
     enemy_controller = EnemyController(SCREEN_WIDTH, SCREEN_HEIGHT)
 
+    bunkers = pygame.sprite.Group()
+    bunker_positions = [SCREEN_WIDTH * 0.2, SCREEN_WIDTH * 0.5, SCREEN_WIDTH * 0.8]
+    for pos_x in bunker_positions:
+        bunker = Bunker(pos_x, 480)
+        bunkers.add(bunker)
+
     all_sprites.add(player)
     all_sprites.add(enemy_controller.enemies)
+    all_sprites.add(bunkers)
     
     game_active = True
     
@@ -37,7 +44,18 @@ while running:
         all_sprites.add(enemy_controller.projectiles)
 
         pygame.sprite.groupcollide(player.projectiles, enemy_controller.enemies, True, True)
+        
         player_foi_atingido = pygame.sprite.spritecollide(player, enemy_controller.projectiles, True)
+
+        bunkers_hit_by_player = pygame.sprite.groupcollide(player.projectiles, bunkers, True, False)
+        for projectiles in bunkers_hit_by_player.values():
+            for bunker_atingido in projectiles:
+                bunker_atingido.take_damage()
+            
+        bunkers_hit_by_enemies = pygame.sprite.groupcollide(enemy_controller.projectiles, bunkers, True, False)
+        for projectiles in bunkers_hit_by_enemies.values():
+            for bunker_atingido in projectiles:
+                bunker_atingido.take_damage()
         
         if player_foi_atingido or not enemy_controller.enemies:
             if player_foi_atingido:
