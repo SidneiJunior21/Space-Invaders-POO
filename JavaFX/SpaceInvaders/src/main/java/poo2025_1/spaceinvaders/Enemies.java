@@ -77,7 +77,7 @@ public class Enemies {
 
             for (int col = 0; col < ENEMY_COLS; col++) {
 
-                Enemy enemy = createEnemy(row, col);
+                Enemy enemy = createSingleEnemy(row, col);
 
                 rootPane.getChildren().add(enemy.getShape());
 
@@ -96,12 +96,16 @@ public class Enemies {
      * <p>
      * @return O inimigo correspondente a essa posicao
      */
-    private Enemy createEnemy (int row, int column) {
+    private Enemy createSingleEnemy (int row, int column) {
         
         Shape enemyShape;
+        
+        double x = (column * 60) + 50;
+        double y = (row * 50) + 50;
         switch (row) {
             case 0:
                 enemyShape = new Circle(shapeSize / 2, Color.DEEPPINK);
+                x = (column * 60) + 65;
                 break;
             case 1:
             case 2:
@@ -115,11 +119,7 @@ public class Enemies {
                 break;
         }
 
-        double x = (column * 60) + 50;
-
         enemyShape.setLayoutX(x);
-
-        double y = (row * 50) + 50;
 
         enemyShape.setLayoutY(y);
 
