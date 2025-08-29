@@ -220,16 +220,18 @@ public class Enemies {
 
         for (int row = 0; row < ENEMY_ROWS; row++) {
 
-            aliveInMinColumn += enemyGrid[row][minLivingColumn].isAlive() ? 1 : 0;
+            if (enemyGrid[row][minLivingColumn].isAlive())
+                aliveInMinColumn++;
 
-            aliveInMaxColumn += enemyGrid[row][maxLivingColumn].isAlive() ? 1 : 0;
-
+            if (enemyGrid[row][maxLivingColumn].isAlive())
+                aliveInMaxColumn++;
+                
         }
 
-        if (aliveInMinColumn == 0)
+        if (aliveInMinColumn == 0 && minLivingColumn < ENEMY_COLS - 1)
             minLivingColumn++;
 
-        if (aliveInMaxColumn == 0)
+        if (aliveInMaxColumn == 0 && maxLivingColumn > 0)
             maxLivingColumn--;
     }
 
