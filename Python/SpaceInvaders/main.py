@@ -50,7 +50,7 @@ while running:
         bunkers_hit_by_player = pygame.sprite.groupcollide(player.projectiles, bunkers, True, False)
         for projectiles in bunkers_hit_by_player.values():
             for bunker_atingido in projectiles:
-                bunker_atingido.take_damage()
+                bunker_atingido.take_damage()   
             
         bunkers_hit_by_enemies = pygame.sprite.groupcollide(enemy_controller.projectiles, bunkers, True, False)
         for projectiles in bunkers_hit_by_enemies.values():
