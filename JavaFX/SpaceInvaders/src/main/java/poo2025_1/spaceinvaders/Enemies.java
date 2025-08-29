@@ -153,15 +153,16 @@ public class Enemies {
      */
     private boolean edgeReached () {
 
-        Bounds paneBounds = rootPane.getLayoutBounds();
-
         for (int row = 0; row < ENEMY_ROWS; row++) {
 
-            if (enemyGrid[row][maxLivingColumn].getShape().getBoundsInParent().getMaxX() >= paneBounds.getWidth())
+            Enemy rightmost = enemyGrid[row][maxLivingColumn];
+            if (rightmost.isAlive() && rightmost.getShape().getBoundsInParent().getMaxX() >= rootPane.getWidth())
                 return true;
 
-            if (enemyGrid[row][minLivingColumn].getShape().getBoundsInParent().getMinX() <= 0)
+            Enemy leftmost = enemyGrid[row][minLivingColumn];
+            if (leftmost.isAlive() && leftmost.getShape().getBoundsInParent().getMinX() <= 0)
                 return true;
+
         }
         
         return false;
