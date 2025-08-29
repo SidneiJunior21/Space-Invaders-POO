@@ -23,7 +23,7 @@ class Projectile(Entity):
             self.handle_death()
 
 class SpaceShip(Entity):
-    def __init__(self, screen_width, screen_height):
+    def __init__(self, screen_width, screen_height, all_sprites_group):
         super().__init__()
         self.image = pygame.Surface((50, 30), pygame.SRCALPHA)
         pygame.draw.polygon(self.image, "yellow", [(25, 0), (0, 30), (50, 30)])
@@ -32,6 +32,7 @@ class SpaceShip(Entity):
         self.speed = 5
         self.screen_width = screen_width
         self.projectiles = pygame.sprite.Group()
+        self.all_sprites = all_sprites_group
         
         self.last_shot_time = 0
         self.shot_cooldown = 200
@@ -51,8 +52,8 @@ class SpaceShip(Entity):
 
         if keys[pygame.K_SPACE]:
             self.shoot()
+            
         self.projectiles.update()
-
 
     def shoot(self):
         now = pygame.time.get_ticks()
@@ -60,6 +61,8 @@ class SpaceShip(Entity):
             self.last_shot_time = now
             projectile = Projectile(self.rect.centerx, self.rect.top, -10, "yellow")
             self.projectiles.add(projectile)
+            self.all_sprites.add(projectile)
+
 
 class Enemy(Entity):
     def __init__(self, x, y, enemy_type):
