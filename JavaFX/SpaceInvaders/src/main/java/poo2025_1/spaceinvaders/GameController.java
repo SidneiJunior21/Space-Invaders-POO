@@ -1,9 +1,10 @@
 package poo2025_1.spaceinvaders;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
-import java.io.IOException;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.input.KeyCode;
@@ -30,18 +31,6 @@ public class GameController implements Initializable {
 
     private Enemies enemies;
 
-    // Para o loop do jogo atual e recarrega a cena principal
-    public void resetGame() {
-        gameLoop.stop();
-
-        try {
-            // Usa o método estático da classe App para recarregar o FXML
-            App.setRoot("primary");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
     @Override
     public void initialize(URL url, ResourceBundle rb) {
 
@@ -49,17 +38,24 @@ public class GameController implements Initializable {
 
         enemies = new Enemies(rootPane);
         
-        gameLoop = new GameLoop(spaceShip, enemies, this);
+        gameLoop = new GameLoop(spaceShip, enemies);
 
         // espera a cena ser criada para adicionar os listeners
         rootPane.sceneProperty().addListener((observable, oldScene, newScene) -> {
             if (newScene != null) {
 
+                // Listener de Game Over
+                newScene.addEventHandler(GameEvent.GAME_OVER, (GameEvent gameOver) -> {
+                    System.out.println("Evento RESTART_GAME recebido pela CENA! Reiniciando...");
+                    Platform.runLater(() -> resetGame());
+                });
+
+                // Listeners de teclado
                 newScene.setOnKeyPressed((KeyEvent event) -> {
-                    if (event.getCode() == KeyCode.D) {
+                    if (event.getCode() == KeyCode.D || event.getCode() == KeyCode.RIGHT) {
                         spaceShip.setMovingRight(true);
                     }
-                    if (event.getCode() == KeyCode.A) {
+                    if (event.getCode() == KeyCode.A || event.getCode() == KeyCode.LEFT) {
                         spaceShip.setMovingLeft(true);
                     }
                     if (event.getCode() == KeyCode.SPACE) {
@@ -69,10 +65,10 @@ public class GameController implements Initializable {
                 });
                 
                 newScene.setOnKeyReleased((KeyEvent event) -> {
-                    if (event.getCode() == KeyCode.D) {
+                    if (event.getCode() == KeyCode.D || event.getCode() == KeyCode.RIGHT) {
                         spaceShip.setMovingRight(false);
                     }
-                    if (event.getCode() == KeyCode.A) {
+                    if (event.getCode() == KeyCode.A || event.getCode() == KeyCode.LEFT) {
                         spaceShip.setMovingLeft(false);
                     }
                     if (event.getCode() == KeyCode.SPACE) {
@@ -83,5 +79,17 @@ public class GameController implements Initializable {
         });
 
         gameLoop.start();
+    }
+
+    // Para o loop do jogo atual e recarrega a cena principal
+    private void resetGame()  {
+        gameLoop.stop();
+
+        try {
+
+            App.setRoot("primary");
+
+        }
+        catch (IOException e) { }
     }
 }

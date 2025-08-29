@@ -8,32 +8,22 @@ public class GameLoop extends AnimationTimer{
 
     private final Enemies enemies;
 
-    private final GameController gameController;
-
-    public GameLoop (SpaceShip spaceship, Enemies enemies, GameController controller){
+    public GameLoop (SpaceShip spaceship, Enemies enemies){
         this.spaceShip = spaceship;
         this.enemies = enemies;
-        this.gameController = controller;
     }
 
     
     @Override
     public void handle(long now) {
-        enemies.Move();
-        spaceShip.Moves();
-        spaceShip.ShootsWithDelay(now);
-        spaceShip.MoveProjectiles();
+        enemies.move();
+        spaceShip.moves();
+        spaceShip.shootsWithDelay(now);
+        spaceShip.moveProjectiles();
 
-        enemies.checkCollisions(spaceShip.getProjectiles());
+        enemies.handleGettingShot(spaceShip.getProjectiles());
         enemies.shoot(now);
-        enemies.moveEnemyProjectiles();
-        if (enemies.areAllEnemiesDefeated()) {
-            gameController.resetGame();
-            return;
-        }
-        if (spaceShip.isHitBy(enemies.getEnemyProjectiles())) {
-            gameController.resetGame();
-            return;
-        }
+        enemies.moveProjectiles();
+        spaceShip.handlesGettingShot(enemies.getProjectiles());
     }
 }

@@ -20,22 +20,34 @@ import javafx.scene.shape.Shape;
  */
 public class Enemies {
 
-    //variaveis novas do papoco
-    private final List<Rectangle> enemyProjectiles;
+    // Variaveis do papoco
+    private final List<Rectangle> projectiles;
+
     private final double projectileSpeed = 4.0;
+
     private long lastEnemyShotTime = 0;
+
     private final long enemyShotCooldown = 400_000_000;
+
     private final Random random = new Random();
 
+    // Variaveis do desenho
     private final Pane rootPane;
 
-    private final List<Shape> enemyShapes;
+    private final Enemy[][] enemyGrid;
 
     private final double shapeSize = 30;
     
     private final int ENEMY_ROWS = 5;
 
     private final int ENEMY_COLS = 8;
+
+    // Variaveis da dinamica
+    private final List<Enemy> livingEnemies;
+
+    private int minLivingColumn = 0;
+
+    private int maxLivingColumn = ENEMY_COLS - 1;
 
     private final double enemySpeed = 1.0;
 
@@ -45,26 +57,33 @@ public class Enemies {
 
         this.rootPane = rootPane;
 
-        enemyShapes = new ArrayList<>();
+        this.enemyGrid = new Enemy[ENEMY_ROWS][ENEMY_COLS];
 
-        this.enemyProjectiles = new ArrayList<>();
+        this.livingEnemies = new ArrayList<>();
 
-        InitializeEnemies();
+        this.projectiles = new ArrayList<>();
+
+        initializeEnemies();
     }
+
+    public List<Rectangle> getProjectiles() { return this.projectiles; }
+
     /**
      * Inicializa os inimigos na tela e na lista que os controlará
      */
-    private void InitializeEnemies () {
+    private void initializeEnemies () {
 
         for (int row = 0; row < ENEMY_ROWS; row++) {
 
             for (int col = 0; col < ENEMY_COLS; col++) {
 
-                Shape enemy = CreateEnemy(row, col);
+                Enemy enemy = createEnemy(row, col);
 
-                rootPane.getChildren().add(enemy);
+                rootPane.getChildren().add(enemy.getShape());
 
-                enemyShapes.add(enemy);
+                enemyGrid[row][col] = enemy;
+
+                livingEnemies.add(enemy);
             }
         }
     }
@@ -73,39 +92,38 @@ public class Enemies {
      * Cria um inimigo, dada a linha e a coluna nas quais ele se localizará.
      * 
      * @param row A linha
-     * @param col A coluna
+     * @param column A coluna
      * <p>
      * @return O inimigo correspondente a essa posicao
      */
-    private Shape CreateEnemy (int row, int col) {
-
-        Shape enemy;
-
+    private Enemy createEnemy (int row, int column) {
+        
+        Shape enemyShape;
         switch (row) {
             case 0:
-                enemy = new Circle(shapeSize / 2, Color.DEEPPINK);
+                enemyShape = new Circle(shapeSize / 2, Color.DEEPPINK);
                 break;
             case 1:
             case 2:
-                enemy = new Rectangle(shapeSize, shapeSize, Color.AQUAMARINE);
+                enemyShape = new Rectangle(shapeSize, shapeSize, Color.AQUAMARINE);
                 break;
             default:
                 Polygon triangle = new Polygon();
                 triangle.getPoints().addAll(shapeSize / 2, 0.0, 0.0, shapeSize, shapeSize, shapeSize);
                 triangle.setFill(Color.ORANGE);
-                enemy = triangle;
+                enemyShape = triangle;
                 break;
         }
 
-        double x = (col * 60) + 50;
+        double x = (column * 60) + 50;
 
-        enemy.setLayoutX(x);
+        enemyShape.setLayoutX(x);
 
         double y = (row * 50) + 50;
 
-        enemy.setLayoutY(y);
+        enemyShape.setLayoutY(y);
 
-        return enemy;
+        return new Enemy(enemyShape, row, column);
     }
 
     /**
@@ -114,191 +132,164 @@ public class Enemies {
      * Após a colisão, inverte-se o sentido do movimento horizontal e incrementa a posicao
      * vertical de todos os inimigos.
      */
-    public void Move () {
-        
-        Shape firstenemyToTheLeft = GetFirstEnemyToTheLeft();
-
-        Shape lastEnemyToTheRight = GetLastEnemyToTheRight();
-
-        Bounds paneBounds = rootPane.getLayoutBounds();        
+    public void move () {
         
         double enemyVelocity = enemySpeed * movementDirection;
+        
+        for (Enemy enemy : livingEnemies)
+            enemy.getShape().setLayoutX(enemy.getShape().getLayoutX() + enemyVelocity);
 
-        for (Shape enemyShape : enemyShapes)
-            enemyShape.setLayoutX(enemyShape.getLayoutX() + enemyVelocity);
-
-        boolean edgeReached = ( lastEnemyToTheRight.getBoundsInParent().getMaxX() ) >= paneBounds.getWidth()
-                                || ( firstenemyToTheLeft.getBoundsInParent().getMinX() ) <= 0;
-
-        if (edgeReached) {
-
+        if (edgeReached()) {
             movementDirection *= -1;
 
-            for (Shape enemyShape : enemyShapes)
-                enemyShape.setLayoutY(enemyShape.getLayoutY() + 5);
+            for (Enemy enemy : livingEnemies)
+                enemy.getShape().setLayoutY(enemy.getShape().getLayoutY() + 5);
         }
-
 
     }
 
-    // Verifica colisões entre projéteis e inimigos
-    public void checkCollisions(List<Rectangle> projectiles) {
-    for (int i = projectiles.size() - 1; i >= 0; i--) {
-        Rectangle projectile = projectiles.get(i);
-        for (int j = enemyShapes.size() - 1; j >= 0; j--) {
-            Shape enemy = enemyShapes.get(j);
-                if (enemy.isVisible() && projectile.getBoundsInParent().intersects(enemy.getBoundsInParent())) {
-                    enemy.setVisible(false);
+    /**
+     * Checa se algum dos inimigos das colunas mais proximas das bordas colidiu com a borda correspondente.
+     */
+    private boolean edgeReached () {
+
+        Bounds paneBounds = rootPane.getLayoutBounds();
+
+        for (int row = 0; row < ENEMY_ROWS; row++) {
+
+            if (enemyGrid[row][maxLivingColumn].getShape().getBoundsInParent().getMaxX() >= paneBounds.getWidth())
+                return true;
+
+            if (enemyGrid[row][minLivingColumn].getShape().getBoundsInParent().getMinX() <= 0)
+                return true;
+        }
+        
+        return false;
+    }
+
+    /**
+     * Lida com as colisoes entre projeteis da nave e inimigos.
+     */
+    public void handleGettingShot (List<Rectangle> shipProjectiles) {
+
+        List<Rectangle> projectilesToRemove = new ArrayList<>();
+
+        List<Enemy> killedEnemies = new ArrayList<>();
+
+        for (Rectangle projectile : shipProjectiles) {
+
+            for (Enemy enemy : livingEnemies) {
+
+                boolean collisionHappened = projectile.getBoundsInParent().intersects(enemy.getShape().getBoundsInParent());
+                
+                if (collisionHappened) {
+
+                    rootPane.getChildren().remove(enemy.getShape());
+
                     rootPane.getChildren().remove(projectile);
-                    projectiles.remove(i);                    
+
+                    projectilesToRemove.add(projectile);
+
+                    enemy.setAlive(false);
+
+                    killedEnemies.add(enemy);
+
+                    updateBorderColumns();
+
                     break; 
                 }
             }
         }
-    }
-    
-    /**
-     * Procura na lista de inimigos pelo inimigo vivo mais próximo da borda direita da tela.
-     */
-    private Shape GetLastEnemyToTheRight() {
 
-        Shape enemyToTheRight = null;
+        shipProjectiles.removeAll(projectilesToRemove);
 
-        int lastMostToRightPositionInRow = ENEMY_COLS - 1;
+        livingEnemies.removeAll(killedEnemies);
 
-         /** 
-          * Percorre cada fileira da direita para esquerda, checando se o inimigo está vivo.
-          * Caso esteja vivo e esteja mais a direita que o inimigo mais a direita da ultima
-          * fileira, se torna o inimigo mais a direita atual.
-          * Retorna o ultimo inimigo mais a direita.
-          * !!! Considera que todos os inimigos estão alinhados verticalmente !!!
-         */
-        for (int row = 0; row < ENEMY_ROWS; row++) {
-
-            int currentPositionInRow = ENEMY_COLS - 1;
-
-            while (currentPositionInRow >= lastMostToRightPositionInRow){
-
-                Shape currentEnemy = enemyShapes.get((row * ENEMY_COLS) + currentPositionInRow);
-
-                boolean currentEnemyIsAlive = rootPane.getChildren().contains(currentEnemy);
-
-                if (currentEnemyIsAlive){
-
-                    enemyToTheRight = currentEnemy;
-
-                    lastMostToRightPositionInRow = currentPositionInRow;
-                    
-                }
-
-                currentPositionInRow--;
-            }
+        if (livingEnemies.isEmpty()) {
+            rootPane.fireEvent(new GameEvent(GameEvent.GAME_OVER));
         }
-
-        return enemyToTheRight;
     }
 
     /**
-     * Procura na lista de inimigos pelo inimigo vivo mais próximo da borda esquerda da tela.
+     * Checa e atualiza se as bordas da formacao se manteem ou mudam conforme inimigos morrem
      */
-    private Shape GetFirstEnemyToTheLeft() {
+    private void updateBorderColumns() {
 
-        Shape enemyToTheLeft = null;
+        int aliveInMinColumn = 0;
+        int aliveInMaxColumn = 0;
 
-        int lastMostToLeftPositionInRow = 0;
-
-         /** 
-          * Percorre cada fileira da esquerda para direita, checando se o inimigo está vivo.
-          * Caso esteja vivo e esteja mais a esquerda que o inimigo mais a esquerda da ultima
-          * fileira, se torna o inimigo mais a esquerda atual.
-          * Retorna o ultimo inimigo mais a esquerda.
-          * !!! Considera que todos os inimigos estão alinhados verticalmente !!!
-         */
         for (int row = 0; row < ENEMY_ROWS; row++) {
 
-            int currentPositionInRow = 0;
+            aliveInMinColumn += enemyGrid[row][minLivingColumn].isAlive() ? 1 : 0;
 
-            while (currentPositionInRow <= lastMostToLeftPositionInRow){
+            aliveInMaxColumn += enemyGrid[row][maxLivingColumn].isAlive() ? 1 : 0;
 
-                Shape currentEnemy = enemyShapes.get((row * ENEMY_COLS) + (currentPositionInRow));
-
-                boolean currentEnemyIsAlive = rootPane.getChildren().contains(currentEnemy);
-
-                if (currentEnemyIsAlive){
-
-                    enemyToTheLeft = currentEnemy;
-
-                    lastMostToLeftPositionInRow = currentPositionInRow;
-
-                }
-
-                currentPositionInRow++;
-            }
         }
 
-        return enemyToTheLeft;
+        if (aliveInMinColumn == 0)
+            minLivingColumn++;
+
+        if (aliveInMaxColumn == 0)
+            maxLivingColumn--;
     }
 
-    // Cria e posiciona um projétil vindo de um inimigo
-    private void createProjectile(Shape enemy) {
+    /**
+     * Cria e posiciona um projétil vindo de um inimigo
+     */
+    private void createProjectile(Shape enemyShape) {
+        
         Rectangle projectile = new Rectangle(5, 15, Color.RED);
-        Bounds enemyBounds = enemy.getBoundsInParent();
+
+        Bounds enemyBounds = enemyShape.getBoundsInParent();
+
         double startX = enemyBounds.getMinX() + (enemyBounds.getWidth() / 2) - (projectile.getWidth() / 2);
         double startY = enemyBounds.getMaxY();
 
         projectile.setLayoutX(startX);
         projectile.setLayoutY(startY);
 
-        enemyProjectiles.add(projectile);
+        projectiles.add(projectile);
         rootPane.getChildren().add(projectile);
     }
 
-    // Move os projéteis dos inimigos e os remove se saírem da tela
-    public void moveEnemyProjectiles() {
+    /**
+     * Move os projéteis dos inimigos e os remove se saírem da tela
+     */
+    public void moveProjectiles () {
+
         Bounds paneBounds = rootPane.getLayoutBounds();
-        for (int i = enemyProjectiles.size() - 1; i >= 0; i--) {
-            Rectangle proj = enemyProjectiles.get(i);
+
+        for (int i = projectiles.size() - 1; i >= 0; i--) {
+
+            Rectangle proj = projectiles.get(i);
+
             proj.setLayoutY(proj.getLayoutY() + projectileSpeed);
 
             if (proj.getLayoutY() > paneBounds.getHeight()) {
+
                 rootPane.getChildren().remove(proj);
-                enemyProjectiles.remove(i);
+
+                projectiles.remove(i);
             }
         }
     }
 
-    // Faz um inimigo aleatório atirar
-    public void shoot(long now) {
-        if ((now - lastEnemyShotTime) < enemyShotCooldown) {
+    /**
+     * Faz um inimigo aleatório atirar
+     */
+    public void shoot (long now) {
+
+        if ((now - lastEnemyShotTime) < enemyShotCooldown)
             return;
-        }
-        List<Shape> visibleEnemies = new ArrayList<>();
-        for (Shape enemy : enemyShapes) {
-            if (enemy.isVisible()) {
-                visibleEnemies.add(enemy);
-            }
-        }
-        if (visibleEnemies.isEmpty()) {
+
+        if (livingEnemies.isEmpty())
             return;
-        }
-        Shape shooter = visibleEnemies.get(random.nextInt(visibleEnemies.size()));
-        createProjectile(shooter);
+
+        Enemy shooter = livingEnemies.get(random.nextInt(livingEnemies.size()));
+
+        createProjectile(shooter.getShape());
+
         lastEnemyShotTime = now;
-    }
 
-    public List<Rectangle> getEnemyProjectiles() {
-        return this.enemyProjectiles;
-    }
-
-    //Verifica se todos os inimigos na lista estão invisíveis
-    public boolean areAllEnemiesDefeated() {
-        for (Shape enemy : enemyShapes) {
-            if (enemy.isVisible()) {
-                // Encontrou pelo menos um inimigo vivo, então o jogo não acabou.
-                return false;
-            }
-        }
-        // Se o loop terminar, significa que nenhum inimigo visível foi encontrado.
-        return true;
     }
 }

@@ -19,6 +19,8 @@ public class SpaceShip {
 
     private final Polygon spaceShipShape;
 
+    private boolean isAlive;
+
     private boolean movingRight = false;
 
     private boolean movingLeft = false;
@@ -38,6 +40,11 @@ public class SpaceShip {
     public SpaceShip(Polygon spaceShipShape){
         this.spaceShipShape = spaceShipShape;
         this.projectiles = new ArrayList<>();
+        this.isAlive = true;
+    }
+
+    public List<Rectangle> getProjectiles () {
+        return this.projectiles;
     }
 
     public void setMovingRight(boolean status){
@@ -58,7 +65,7 @@ public class SpaceShip {
      * @see
      *          GameController.initialize 
      */
-    public void Moves (){
+    public void moves (){
 
         double currentX = spaceShipShape.getLayoutX();
 
@@ -92,17 +99,15 @@ public class SpaceShip {
      * @see 
      *          GameLoop.handle
      */
-    public void ShootsWithDelay (long now) {
+    public void shootsWithDelay (long now) {
 
         boolean delayIsRespected = (now - lastShotTime) >= shotCooldown;
 
         if (isShooting && delayIsRespected){
 
-            Rectangle projectile = CreateProjectile();
-
-            projectiles.add(projectile);
+            Rectangle newProjectile = createProjectile();
             
-            DrawProjectile(projectile);
+            drawProjectile(newProjectile);
 
             lastShotTime = now;
         }
@@ -111,7 +116,7 @@ public class SpaceShip {
     /**
      * Move os projéteis contidos na lista de projéteis até que eles saiam da tela
      */
-    public void MoveProjectiles(){
+    public void moveProjectiles (){
         // ao contrário para remover com segurança
         for (int i = projectiles.size() - 1; i >= 0; i--) {
             Rectangle proj = projectiles.get(i);
@@ -119,16 +124,16 @@ public class SpaceShip {
 
             // remove tiro quando sai da telaa
             if (proj.getLayoutY() < 0) {
-                EraseProjectile(proj);
+                eraseProjectile(proj);
                 projectiles.remove(i);
             }
         }
     }
 
     /**
-     * Cria e retorna um projétil padrão
+     * Cria, retorna e adiciona um projétil padrão à lista
      */
-    private Rectangle CreateProjectile(){
+    private Rectangle createProjectile (){
         Rectangle projectile = new Rectangle(5, 15); // largura, altura
         projectile.setStyle("-fx-fill: yellow;");
         
@@ -144,6 +149,8 @@ public class SpaceShip {
         projectile.setLayoutX(startX);
         projectile.setLayoutY(startY);
 
+        projectiles.add(projectile);
+
         return projectile;
     }
     
@@ -152,15 +159,11 @@ public class SpaceShip {
      * @param projectile
      *            O projétil a ser desenhado
      */
-    private void DrawProjectile(Rectangle projectile){
+    private void drawProjectile (Rectangle projectile){
         if (spaceShipShape.getParent() instanceof Pane){
             Pane parent = (Pane) spaceShipShape.getParent();
             parent.getChildren().add(projectile);
         }
-    }
-
-    public List<Rectangle> getProjectiles() {
-        return this.projectiles;
     }
 
     /**
@@ -168,20 +171,35 @@ public class SpaceShip {
      * @param projectile
      *            O projétil a ser apagado
      */
-    private void EraseProjectile(Rectangle projectile){
+    private void eraseProjectile (Rectangle projectile){
         if (spaceShipShape.getParent() instanceof Pane){
-            Pane parent = (Pane) spaceShipShape.getParent();
-            parent.getChildren().remove(projectile);
+            Pane rootPane = (Pane) spaceShipShape.getParent();
+            rootPane.getChildren().remove(projectile);
         }
     }
 
-    // Verifica se a nave colidiu com algum projétil da lista fornecida
-    public boolean isHitBy(List<Rectangle> enemyProjectiles) {
-        for (Rectangle projectile : enemyProjectiles) {
-            if (projectile.getBoundsInParent().intersects(this.spaceShipShape.getBoundsInParent())) {
-                return true;
+    /**
+     * Lida com o fato de ter morrido
+     */
+    public void handlesGettingShot (List<Rectangle> enemyProjectiles) {
+        if (isAlive) {
+
+            for (Rectangle projectile : enemyProjectiles) {
+
+                if (projectile.getBoundsInParent().intersects(this.spaceShipShape.getBoundsInParent())) {
+                    
+                    isAlive = false;
+
+                    if (spaceShipShape.getParent() instanceof Pane) {
+                        Pane rootPane = (Pane) spaceShipShape.getParent();
+                        rootPane.getChildren().remove(projectile);
+                    }
+                    
+                }
             }
+
+            if (!isAlive)
+                spaceShipShape.fireEvent(new GameEvent(GameEvent.GAME_OVER));
         }
-        return false;
     }
 }
