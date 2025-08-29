@@ -8,9 +8,12 @@ public class GameLoop extends AnimationTimer{
 
     private final Enemies enemies;
 
-    public GameLoop (SpaceShip spaceship, Enemies enemies){
+    private final Bunker[] bunkers;
+
+    public GameLoop (SpaceShip spaceship, Enemies enemies, Bunker[] bunkers) {
         this.spaceShip = spaceship;
         this.enemies = enemies;
+        this.bunkers = bunkers;
     }
 
     
@@ -25,5 +28,10 @@ public class GameLoop extends AnimationTimer{
         enemies.shoot(now);
         enemies.moveProjectiles();
         spaceShip.handlesGettingShot(enemies.getProjectiles());
+
+        for (Bunker bunker : bunkers) {
+            bunker.handlesGettingShot(spaceShip.getProjectiles());
+            bunker.handlesGettingShot(enemies.getProjectiles());
+        }
     }
 }

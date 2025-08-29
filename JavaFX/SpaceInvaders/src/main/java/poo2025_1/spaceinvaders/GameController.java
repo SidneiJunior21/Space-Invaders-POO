@@ -25,6 +25,17 @@ public class GameController implements Initializable {
     @FXML
     private AnchorPane rootPane; 
 
+    @FXML
+    private Polygon leftBunkerShape;
+
+    @FXML
+    private Polygon centerBunkerShape;
+    
+    @FXML
+    private Polygon rightBunkerShape;
+
+    private Bunker[] bunkers;
+
     private GameLoop gameLoop;
 
     private SpaceShip spaceShip;
@@ -34,11 +45,17 @@ public class GameController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
 
+        bunkers = new Bunker[] {
+            new Bunker(leftBunkerShape), 
+            new Bunker(centerBunkerShape), 
+            new Bunker(rightBunkerShape)
+        };
+
         spaceShip = new SpaceShip(spaceShipShape);
 
         enemies = new Enemies(rootPane);
         
-        gameLoop = new GameLoop(spaceShip, enemies);
+        gameLoop = new GameLoop(spaceShip, enemies, bunkers);
 
         // espera a cena ser criada para adicionar os listeners
         rootPane.sceneProperty().addListener((observable, oldScene, newScene) -> {

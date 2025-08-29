@@ -21,7 +21,7 @@ import javafx.scene.shape.Shape;
 public class Enemies {
 
     // Variaveis do papoco
-    private final List<Rectangle> projectiles;
+    private final List<Projectile> projectiles;
 
     private final double projectileSpeed = 4.0;
 
@@ -66,7 +66,7 @@ public class Enemies {
         initializeEnemies();
     }
 
-    public List<Rectangle> getProjectiles() { return this.projectiles; }
+    public List<Projectile> getProjectiles() { return this.projectiles; }
 
     /**
      * Inicializa os inimigos na tela e na lista que os controlará
@@ -97,11 +97,13 @@ public class Enemies {
      * @return O inimigo correspondente a essa posicao
      */
     private Enemy createSingleEnemy (int row, int column) {
-        
-        Shape enemyShape;
-        
+
         double x = (column * 60) + 50;
+
         double y = (row * 50) + 50;
+
+        Shape enemyShape;
+
         switch (row) {
             case 0:
                 enemyShape = new Circle(shapeSize / 2, Color.DEEPPINK);
@@ -171,23 +173,23 @@ public class Enemies {
     /**
      * Lida com as colisoes entre projeteis da nave e inimigos.
      */
-    public void handleGettingShot (List<Rectangle> shipProjectiles) {
+    public void handleGettingShot (List<Projectile> shipProjectiles) {
 
-        List<Rectangle> projectilesToRemove = new ArrayList<>();
+        List<Projectile> projectilesToRemove = new ArrayList<>();
 
         List<Enemy> killedEnemies = new ArrayList<>();
 
-        for (Rectangle projectile : shipProjectiles) {
+        for (Projectile projectile : shipProjectiles) {
 
             for (Enemy enemy : livingEnemies) {
 
-                boolean collisionHappened = projectile.getBoundsInParent().intersects(enemy.getShape().getBoundsInParent());
+                boolean collisionHappened = enemy.checkCollisionWith(projectile);
                 
                 if (collisionHappened) {
 
-                    rootPane.getChildren().remove(enemy.getShape());
+                    enemy.eraseShape();
 
-                    rootPane.getChildren().remove(projectile);
+                    projectile.handleDeath();
 
                     projectilesToRemove.add(projectile);
 
@@ -241,18 +243,18 @@ public class Enemies {
      */
     private void createProjectile(Shape enemyShape) {
         
-        Rectangle projectile = new Rectangle(5, 15, Color.RED);
+        Rectangle projectileShape = new Rectangle(5, 15, Color.RED);
 
         Bounds enemyBounds = enemyShape.getBoundsInParent();
 
-        double startX = enemyBounds.getMinX() + (enemyBounds.getWidth() / 2) - (projectile.getWidth() / 2);
+        double startX = enemyBounds.getMinX() + (enemyBounds.getWidth() / 2) - (projectileShape.getWidth() / 2);
         double startY = enemyBounds.getMaxY();
 
-        projectile.setLayoutX(startX);
-        projectile.setLayoutY(startY);
+        projectileShape.setLayoutX(startX);
+        projectileShape.setLayoutY(startY);
 
-        projectiles.add(projectile);
-        rootPane.getChildren().add(projectile);
+        projectiles.add(new Projectile(projectileShape));
+        rootPane.getChildren().add(projectileShape);
     }
 
     /**
@@ -262,19 +264,22 @@ public class Enemies {
 
         Bounds paneBounds = rootPane.getLayoutBounds();
 
-        for (int i = projectiles.size() - 1; i >= 0; i--) {
+        List<Projectile> projectilesToRemove = new ArrayList<>();
+        
+        for (Projectile projectile : projectiles) {
 
-            Rectangle proj = projectiles.get(i);
+            Shape projectileShape = projectile.getShape();
 
-            proj.setLayoutY(proj.getLayoutY() + projectileSpeed);
+            projectileShape.setLayoutY(projectileShape.getLayoutY() + projectileSpeed);
 
-            if (proj.getLayoutY() > paneBounds.getHeight()) {
+            if (projectileShape.getLayoutY() > paneBounds.getHeight()) {
 
-                rootPane.getChildren().remove(proj);
+                projectile.handleDeath();
 
-                projectiles.remove(i);
+                projectilesToRemove.add(projectile);
             }
         }
+        projectiles.removeAll(projectilesToRemove);
     }
 
     /**

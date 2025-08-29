@@ -7,6 +7,7 @@ import javafx.geometry.Bounds;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.Shape;
 
 
 /**
@@ -27,7 +28,7 @@ public class SpaceShip {
 
     private final double spaceShipSpeed = 5.0;
 
-    private final List<Rectangle> projectiles;
+    private final List<Projectile> projectiles;
 
     private final double projectileSpeed = 10.0;
 
@@ -43,7 +44,7 @@ public class SpaceShip {
         this.isAlive = true;
     }
 
-    public List<Rectangle> getProjectiles () {
+    public List<Projectile> getProjectiles () {
         return this.projectiles;
     }
 
@@ -105,9 +106,9 @@ public class SpaceShip {
 
         if (isShooting && delayIsRespected){
 
-            Rectangle newProjectile = createProjectile();
+            Projectile newProjectile = createProjectile();
             
-            drawProjectile(newProjectile);
+            drawProjectile(newProjectile.getShape());
 
             lastShotTime = now;
         }
@@ -119,13 +120,18 @@ public class SpaceShip {
     public void moveProjectiles (){
         // ao contrário para remover com segurança
         for (int i = projectiles.size() - 1; i >= 0; i--) {
-            Rectangle proj = projectiles.get(i);
-            proj.setLayoutY(proj.getLayoutY() - projectileSpeed);
+
+            Projectile projectile = projectiles.get(i);
+
+            projectile.getShape().setLayoutY(projectile.getShape().getLayoutY() - projectileSpeed);
 
             // remove tiro quando sai da telaa
-            if (proj.getLayoutY() < 0) {
-                eraseProjectile(proj);
+            if (projectile.getShape().getLayoutY() < 0) {
+
+                projectile.handleDeath();
+
                 projectiles.remove(i);
+
             }
         }
     }
@@ -133,22 +139,23 @@ public class SpaceShip {
     /**
      * Cria, retorna e adiciona um projétil padrão à lista
      */
-    private Rectangle createProjectile (){
-        Rectangle projectile = new Rectangle(5, 15); // largura, altura
-        projectile.setStyle("-fx-fill: yellow;");
+    private Projectile createProjectile (){
+        Rectangle projectileShape = new Rectangle(5, 15); // largura, altura
+        projectileShape.setStyle("-fx-fill: yellow;");
         
         // Pega os limites visuais da nave na tela
         Bounds shipBounds = spaceShipShape.getBoundsInParent();
 
         // posição X é o centro da nave
         // (borda esquerda + metade da largura) - (metade da largura do tiro)
-        double startX = shipBounds.getMinX() + (shipBounds.getWidth() / 2) - (projectile.getWidth() / 2);
+        double startX = shipBounds.getMinX() + (shipBounds.getWidth() / 2) - (projectileShape.getWidth() / 2);
         // posição Y é o topo da nave
         double startY = shipBounds.getMinY();
 
-        projectile.setLayoutX(startX);
-        projectile.setLayoutY(startY);
+        projectileShape.setLayoutX(startX);
+        projectileShape.setLayoutY(startY);
 
+        Projectile projectile = new Projectile(projectileShape);
         projectiles.add(projectile);
 
         return projectile;
@@ -156,44 +163,29 @@ public class SpaceShip {
     
     /**
      * Desenha um projétil na tela (obtida a partir da nave)
-     * @param projectile
+     * @param projectileShape
      *            O projétil a ser desenhado
      */
-    private void drawProjectile (Rectangle projectile){
-        if (spaceShipShape.getParent() instanceof Pane){
-            Pane parent = (Pane) spaceShipShape.getParent();
-            parent.getChildren().add(projectile);
-        }
-    }
-
-    /**
-     * Apaga um projétil da tela
-     * @param projectile
-     *            O projétil a ser apagado
-     */
-    private void eraseProjectile (Rectangle projectile){
+    private void drawProjectile (Shape projectileShape){
         if (spaceShipShape.getParent() instanceof Pane){
             Pane rootPane = (Pane) spaceShipShape.getParent();
-            rootPane.getChildren().remove(projectile);
+            rootPane.getChildren().add(projectileShape);
         }
     }
 
     /**
      * Lida com o fato de ter morrido
      */
-    public void handlesGettingShot (List<Rectangle> enemyProjectiles) {
+    public void handlesGettingShot (List<Projectile> enemyProjectiles) {
         if (isAlive) {
 
-            for (Rectangle projectile : enemyProjectiles) {
+            for (Projectile projectile : enemyProjectiles) {
 
-                if (projectile.getBoundsInParent().intersects(this.spaceShipShape.getBoundsInParent())) {
+                if (projectile.checkCollisionWith(spaceShipShape)) {
                     
                     isAlive = false;
 
-                    if (spaceShipShape.getParent() instanceof Pane) {
-                        Pane rootPane = (Pane) spaceShipShape.getParent();
-                        rootPane.getChildren().remove(projectile);
-                    }
+                    projectile.handleDeath();
                     
                 }
             }
