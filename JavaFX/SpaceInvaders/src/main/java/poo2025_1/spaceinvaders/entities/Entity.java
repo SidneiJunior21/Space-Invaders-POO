@@ -1,4 +1,4 @@
-package poo2025_1.spaceinvaders;
+package poo2025_1.spaceinvaders.entities;
 
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Shape;
@@ -42,13 +42,11 @@ public abstract class Entity {
 
             boolean hasCollided = false;
 
-            if (otherObject instanceof Shape){
-                Shape otherObjectShape = (Shape) otherObject;
+            if (otherObject instanceof Shape otherObjectShape){
                 hasCollided = checkCollisionWith(otherObjectShape);
             }
 
-            if (otherObject instanceof Entity){
-                Entity otherEntity = (Entity) otherObject;
+            if (otherObject instanceof Entity otherEntity){
                 hasCollided = checkCollisionWith(otherEntity);
             }
 
@@ -70,9 +68,8 @@ public abstract class Entity {
         if (shape.getParent() == null)
             return;
         
-        if (shape.getParent() instanceof Pane) {
+        if (shape.getParent() instanceof Pane rootPane) {
 
-            Pane rootPane = (Pane) shape.getParent();
 
             rootPane.getChildren().remove(this.shape);
 

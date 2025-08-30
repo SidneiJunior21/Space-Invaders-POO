@@ -1,4 +1,4 @@
-package poo2025_1.spaceinvaders;
+package poo2025_1.spaceinvaders.entities;
 
 import java.util.ArrayList;
 import java.util.List;

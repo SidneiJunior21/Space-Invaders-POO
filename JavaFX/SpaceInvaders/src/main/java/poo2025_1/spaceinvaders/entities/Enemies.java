@@ -1,4 +1,4 @@
-package poo2025_1.spaceinvaders;
+package poo2025_1.spaceinvaders.entities;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,6 +11,7 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
+import poo2025_1.spaceinvaders.core.GameEvent;
 
 /**
  * Classe responsável por encapsular os inimigos. <p>
@@ -105,20 +106,17 @@ public class Enemies {
         Shape enemyShape;
 
         switch (row) {
-            case 0:
+            case 0 -> {
                 enemyShape = new Circle(shapeSize / 2, Color.DEEPPINK);
                 x = (column * 60) + 65;
-                break;
-            case 1:
-            case 2:
-                enemyShape = new Rectangle(shapeSize, shapeSize, Color.AQUAMARINE);
-                break;
-            default:
+            }
+            case 1, 2 -> enemyShape = new Rectangle(shapeSize, shapeSize, Color.AQUAMARINE);
+            default -> {
                 Polygon triangle = new Polygon();
                 triangle.getPoints().addAll(shapeSize / 2, 0.0, 0.0, shapeSize, shapeSize, shapeSize);
                 triangle.setFill(Color.ORANGE);
                 enemyShape = triangle;
-                break;
+            }
         }
 
         enemyShape.setLayoutX(x);

@@ -1,6 +1,9 @@
-package poo2025_1.spaceinvaders;
+package poo2025_1.spaceinvaders.core;
 
 import javafx.animation.AnimationTimer;
+import poo2025_1.spaceinvaders.entities.Bunker;
+import poo2025_1.spaceinvaders.entities.Enemies;
+import poo2025_1.spaceinvaders.entities.SpaceShip;
 
 public class GameLoop extends AnimationTimer{
     

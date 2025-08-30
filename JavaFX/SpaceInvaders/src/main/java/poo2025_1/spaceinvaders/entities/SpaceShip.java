@@ -1,4 +1,4 @@
-package poo2025_1.spaceinvaders;
+package poo2025_1.spaceinvaders.entities;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,6 +8,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
+import poo2025_1.spaceinvaders.core.GameEvent;
 
 
 /**
@@ -167,8 +168,7 @@ public class SpaceShip {
      *            O projétil a ser desenhado
      */
     private void drawProjectile (Shape projectileShape){
-        if (spaceShipShape.getParent() instanceof Pane){
-            Pane rootPane = (Pane) spaceShipShape.getParent();
+        if (spaceShipShape.getParent() instanceof Pane rootPane){
             rootPane.getChildren().add(projectileShape);
         }
     }
