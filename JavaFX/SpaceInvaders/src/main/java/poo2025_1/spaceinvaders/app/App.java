@@ -7,6 +7,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCombination;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 /**
@@ -18,8 +19,10 @@ public class App extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
+        double screenWidth = Screen.getPrimary().getVisualBounds().getWidth();
+        double screenHeight = Screen.getPrimary().getVisualBounds().getHeight();
 
-        scene = new Scene(loadFXML("gamescene"), 640, 800);
+        scene = new Scene(loadFXML("gamescene"), screenWidth, screenHeight);
         stage.setScene(scene);
         stage.setTitle("Space Invaders");
              

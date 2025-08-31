@@ -37,11 +37,11 @@ public class Enemies {
 
     private final Enemy[][] enemyGrid;
 
-    private final double shapeSize = 30;
-    
-    private final int ENEMY_ROWS = 5;
+    private final double shapeSize = 35;
 
-    private final int ENEMY_COLS = 8;
+    private final int ENEMY_ROWS = 8;
+
+    private final int ENEMY_COLS = 16;
 
     // Variaveis da dinamica
     private final List<Enemy> livingEnemies;
