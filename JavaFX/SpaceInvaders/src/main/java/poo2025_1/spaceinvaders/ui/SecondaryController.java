@@ -8,7 +8,7 @@ import poo2025_1.spaceinvaders.app.App;
 public class SecondaryController {
 
     @FXML
-    private void switchToPrimary() throws IOException {
-        App.setRoot("primary");
+    private void switchToGame() throws IOException {
+        App.setRoot("gamescene");
     }
 }

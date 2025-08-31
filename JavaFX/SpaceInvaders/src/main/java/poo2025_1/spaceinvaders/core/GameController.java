@@ -14,6 +14,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
+import javafx.stage.Screen;
 import poo2025_1.spaceinvaders.app.App;
 import poo2025_1.spaceinvaders.entities.Bunker;
 import poo2025_1.spaceinvaders.entities.Enemies;
@@ -45,9 +46,9 @@ public class GameController implements Initializable {
 
     private Enemies enemies;
 
-    private final double BASE_WIDTH = 600;
+    private final double BASE_WIDTH = Screen.getPrimary().getVisualBounds().getWidth();
     
-    private final double BASE_HEIGHT = 800;
+    private final double BASE_HEIGHT = Screen.getPrimary().getVisualBounds().getHeight();
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -122,7 +123,7 @@ public class GameController implements Initializable {
 
         try {
 
-            App.setRoot("primary");
+            App.setRoot("gamescene");
 
         }
         catch (IOException e) { }
