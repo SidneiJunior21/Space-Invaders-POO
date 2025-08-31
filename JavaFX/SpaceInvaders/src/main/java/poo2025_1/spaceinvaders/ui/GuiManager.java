@@ -3,6 +3,8 @@ package poo2025_1.spaceinvaders.ui;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.NumberBinding;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
@@ -103,39 +105,46 @@ public class GuiManager {
     }
 
     private void setupBindings() {
-        
-        // Inicializando a posição do jogador no meio da tela
-        Platform.runLater(() -> {
-            spaceShipShape.setLayoutX(rootPane.getWidth() / 2);
-            spaceShipShape.setLayoutY(rootPane.getHeight() - 50);
-        });
+    ChangeListener<Number> sizeListener = new ChangeListener<Number>() {
+        @Override
+        public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+            if (rootPane.getWidth() > 0 && rootPane.getHeight() > 0) {
+                spaceShipShape.setLayoutX(rootPane.getWidth() / 2);
+                spaceShipShape.setLayoutY(rootPane.getHeight() - 50);
 
-        // Posicionar os bunkers em porcentagens da largura
-        leftBunkerShape.layoutXProperty().bind(rootPane.widthProperty().multiply(0.20)); // 20% da largura
-        leftBunkerShape.layoutYProperty().bind(rootPane.heightProperty().subtract(150));
+                rootPane.widthProperty().removeListener(this);
+                rootPane.heightProperty().removeListener(this);
+            }
+        }
+    };
 
-        centerBunkerShape.layoutXProperty().bind(rootPane.widthProperty().multiply(0.50)); // 50% da largura
-        centerBunkerShape.layoutYProperty().bind(rootPane.heightProperty().subtract(150));
+    rootPane.widthProperty().addListener(sizeListener);
+    rootPane.heightProperty().addListener(sizeListener);
 
-        rightBunkerShape.layoutXProperty().bind(rootPane.widthProperty().multiply(0.80)); // 80% da largura
-        rightBunkerShape.layoutYProperty().bind(rootPane.heightProperty().subtract(150));
+    leftBunkerShape.layoutXProperty().bind(rootPane.widthProperty().multiply(0.20));
+    leftBunkerShape.layoutYProperty().bind(rootPane.heightProperty().subtract(150));
 
-        NumberBinding scaleBinding = Bindings.min(
-                rootPane.widthProperty().divide(BASE_WIDTH),
-                rootPane.heightProperty().divide(BASE_HEIGHT)
-        );
+    centerBunkerShape.layoutXProperty().bind(rootPane.widthProperty().multiply(0.50));
+    centerBunkerShape.layoutYProperty().bind(rootPane.heightProperty().subtract(150));
 
-        // Aplique a mesma regra de escala para todos os objetos
-        spaceShipShape.scaleXProperty().bind(scaleBinding);
-        spaceShipShape.scaleYProperty().bind(scaleBinding);
-        
-        leftBunkerShape.scaleXProperty().bind(scaleBinding);
-        leftBunkerShape.scaleYProperty().bind(scaleBinding);
-        
-        centerBunkerShape.scaleXProperty().bind(scaleBinding);
-        centerBunkerShape.scaleYProperty().bind(scaleBinding);
+    rightBunkerShape.layoutXProperty().bind(rootPane.widthProperty().multiply(0.80));
+    rightBunkerShape.layoutYProperty().bind(rootPane.heightProperty().subtract(150));
 
-        rightBunkerShape.scaleXProperty().bind(scaleBinding);
-        rightBunkerShape.scaleYProperty().bind(scaleBinding);
+    NumberBinding scaleBinding = Bindings.min(
+            rootPane.widthProperty().divide(BASE_WIDTH),
+            rootPane.heightProperty().divide(BASE_HEIGHT)
+    );
+
+    spaceShipShape.scaleXProperty().bind(scaleBinding);
+    spaceShipShape.scaleYProperty().bind(scaleBinding);
+    
+    leftBunkerShape.scaleXProperty().bind(scaleBinding);
+    leftBunkerShape.scaleYProperty().bind(scaleBinding);
+    
+    centerBunkerShape.scaleXProperty().bind(scaleBinding);
+    centerBunkerShape.scaleYProperty().bind(scaleBinding);
+
+    rightBunkerShape.scaleXProperty().bind(scaleBinding);
+    rightBunkerShape.scaleYProperty().bind(scaleBinding);
     }
 }
