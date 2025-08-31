@@ -22,7 +22,7 @@ public class App extends Application {
         double screenWidth = Screen.getPrimary().getVisualBounds().getWidth();
         double screenHeight = Screen.getPrimary().getVisualBounds().getHeight();
 
-        scene = new Scene(loadFXML("gamescene"), screenWidth, screenHeight);
+        scene = new Scene(loadFXML("primary"), screenWidth, screenHeight);
         stage.setScene(scene);
         stage.setTitle("Space Invaders");
              
