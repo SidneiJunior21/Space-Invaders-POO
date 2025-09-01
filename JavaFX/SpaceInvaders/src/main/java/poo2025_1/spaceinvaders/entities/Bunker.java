@@ -5,8 +5,6 @@ import java.util.List;
 import java.util.Random;
 
 import javafx.geometry.Bounds;
-
-import javafx.scene.shape.Shape;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
