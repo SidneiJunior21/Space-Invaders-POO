@@ -10,7 +10,7 @@ class Game:
     def __init__(self):
         pygame.init()
         self._get_screen_dimensions()
-        self.screen = pygame.display.set_mode((self.screen_width, self.screen_height), pygame.FULLSCREEN)
+        self.screen = pygame.display.set_mode((self.screen_width, self.screen_height), pygame.NOFRAME)
         pygame.display.set_caption(settings.TITLE)
         self.clock = pygame.time.Clock()
         self.running = True
