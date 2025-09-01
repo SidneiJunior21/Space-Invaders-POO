@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.StackPane?>
+
+<StackPane fx:id="rootStackPane" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="poo2025_1.spaceinvaders.core.GameController">
+    <children>
+        <Pane fx:id="rootPane" style="-fx-background-color: #000000;" />
+    </children>
+</StackPane>
