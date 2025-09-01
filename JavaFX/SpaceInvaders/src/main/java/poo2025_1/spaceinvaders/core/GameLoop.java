@@ -5,6 +5,9 @@ import poo2025_1.spaceinvaders.entities.Bunker;
 import poo2025_1.spaceinvaders.entities.Enemies;
 import poo2025_1.spaceinvaders.entities.SpaceShip;
 
+/**
+ * Classe responsável por gerar o loop de execucao do jogo.
+ */
 public class GameLoop extends AnimationTimer{
     
     private final SpaceShip spaceShip;
@@ -28,7 +31,7 @@ public class GameLoop extends AnimationTimer{
         spaceShip.moveProjectiles();
 
         enemies.handleGettingShot(spaceShip.getProjectiles());
-        enemies.shoot(now);
+        enemies.randomEnemyShoot(now);
         enemies.moveProjectiles();
         spaceShip.handlesGettingShot(enemies.getProjectiles());
 

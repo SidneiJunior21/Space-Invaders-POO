@@ -4,6 +4,9 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import poo2025_1.spaceinvaders.core.GameController;
 
+/**
+ * Controller do menu de pausa.
+ */
 public class PauseMenuController {
 
     private GameController gameController;
@@ -13,21 +16,21 @@ public class PauseMenuController {
     }
 
     @FXML
-    private void continueGame() {
+    public void continueGame() {
         if (gameController != null) {
             gameController.togglePause();
         }
     }
 
     @FXML
-    private void restartGame() {
+    public void restartGame() {
         if (gameController != null) {
-            gameController.resetGame();
+            Platform.runLater(() -> gameController.restartGame());
         }
     }
 
     @FXML
-    private void quitGame() {
+    public void quitGame() {
         Platform.exit();
     }
 }

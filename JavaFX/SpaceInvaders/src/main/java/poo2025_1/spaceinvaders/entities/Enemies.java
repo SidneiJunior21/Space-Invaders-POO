@@ -170,6 +170,7 @@ public class Enemies {
 
     /**
      * Lida com as colisoes entre projeteis da nave e inimigos.
+     * @param shipProjectiles A lista com todos os projeteis vivos da nave.
      */
     public void handleGettingShot (List<Projectile> shipProjectiles) {
 
@@ -238,6 +239,7 @@ public class Enemies {
 
     /**
      * Cria e posiciona um projétil vindo de um inimigo
+     * @param enemyShape O shape do inimigo que vai atirar
      */
     private void createProjectile(Shape enemyShape) {
         
@@ -282,8 +284,11 @@ public class Enemies {
 
     /**
      * Faz um inimigo aleatório atirar
+     * @param now O timestamp do frame atual dado em nanosegundos. 
+     * Passado pelo GameLoop. <p>
+     * @see GameLoop.handle
      */
-    public void shoot (long now) {
+    public void randomEnemyShoot (long now) {
 
         if ((now - lastEnemyShotTime) < enemyShotCooldown)
             return;

@@ -8,16 +8,16 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
-import javafx.scene.Parent;
 import poo2025_1.spaceinvaders.app.App;
 import poo2025_1.spaceinvaders.entities.Bunker;
 import poo2025_1.spaceinvaders.entities.Enemies;
 import poo2025_1.spaceinvaders.entities.SpaceShip;
-import poo2025_1.spaceinvaders.ui.GuiManager;
+import poo2025_1.spaceinvaders.ui.GameScenePainter;
 import poo2025_1.spaceinvaders.ui.PauseMenuController;
 
 /**
@@ -29,6 +29,7 @@ public class GameController implements Initializable {
 
     @FXML
     private StackPane rootStackPane;
+
     @FXML
     private Pane rootPane;
 
@@ -40,21 +41,22 @@ public class GameController implements Initializable {
 
     private Enemies enemies;
 
-    private boolean isPaused = false;
     private Parent pauseMenu;
+
+    private boolean isPaused = false;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         
-        GuiManager guiManager = new GuiManager(rootPane);
+        GameScenePainter gameScenePainter = new GameScenePainter(rootPane);
 
         bunkers = new Bunker[] {
-            new Bunker(guiManager.getLeftBunkerShape()), 
-            new Bunker(guiManager.getCenterBunkerShape()), 
-            new Bunker(guiManager.getRightBunkerShape())
+            new Bunker(gameScenePainter.getLeftBunkerShape()), 
+            new Bunker(gameScenePainter.getCenterBunkerShape()), 
+            new Bunker(gameScenePainter.getRightBunkerShape())
         };
 
-        spaceShip = new SpaceShip(guiManager.getSpaceShipShape());
+        spaceShip = new SpaceShip(gameScenePainter.getSpaceShipShape());
 
         enemies = new Enemies(rootPane);
         
@@ -62,28 +64,23 @@ public class GameController implements Initializable {
 
         loadPauseMenu();
 
+        addInputListeners();
+
+        gameLoop.start();
+    }
+
+    /**
+     * Metodo responsavel por adicionar os listeners de input a cena do jogo.
+     */
+    private void addInputListeners() {
+    
         // espera a cena ser criada para adicionar os listeners
         rootPane.sceneProperty().addListener((observable, oldScene, newScene) -> {
             if (newScene != null) {
-
                 // Listener de Game Over
                 newScene.addEventHandler(GameEvent.GAME_OVER, (GameEvent gameOver) -> {
                     System.out.println("Evento GAME_OVER recebido pela CENA! Reiniciando...");
-                    Platform.runLater(() -> resetGame());
-                });
-
-                // Listeners de teclado
-                newScene.setOnKeyPressed((KeyEvent event) -> {
-                    if (event.getCode() == KeyCode.D || event.getCode() == KeyCode.RIGHT) {
-                        spaceShip.setMovingRight(true);
-                    }
-                    if (event.getCode() == KeyCode.A || event.getCode() == KeyCode.LEFT) {
-                        spaceShip.setMovingLeft(true);
-                    }
-                    if (event.getCode() == KeyCode.SPACE) {
-                        spaceShip.setIsShooting(true);
-                    }
-
+                    Platform.runLater(() -> restartGame());
                 });
 
                 newScene.setOnKeyPressed((KeyEvent event) -> {
@@ -91,7 +88,7 @@ public class GameController implements Initializable {
                         togglePause();
                     }
 
-                    // Só processar teclas de jogo se não estiver pausado
+                    // Só processa teclas de jogo se não estiver pausado
                     if (!isPaused) {
                         if (event.getCode() == KeyCode.D || event.getCode() == KeyCode.RIGHT) {
                             spaceShip.setMovingRight(true);
@@ -118,21 +115,25 @@ public class GameController implements Initializable {
                 });
             }
         });
-
-        gameLoop.start();
     }
 
+    /**
+     * Carrega o FXML do menu de pausa.
+     */
     private void loadPauseMenu() {
         try {
             FXMLLoader loader = new FXMLLoader(App.class.getResource("pausemenu.fxml"));
             pauseMenu = loader.load();
             PauseMenuController pauseController = loader.getController();
             pauseController.setGameController(this); // Passa a instância atual para o controller do menu
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException e) { 
+            System.out.println("Erro ao carregar o menu de pausa: " + e.getMessage());
         }
     }
 
+    /**
+     * Alterna entre os modos: pausado e despausado.
+     */
     public void togglePause() {
         isPaused = !isPaused;
         if (isPaused) {
@@ -146,13 +147,15 @@ public class GameController implements Initializable {
         }
     }
 
-    // Para o loop do jogo atual e recarrega a cena principal
-    public void resetGame()  {
+    /**
+     * Para a execucao atual e reinicia o jogo
+     */
+    public void restartGame()  {
         gameLoop.stop();
         try {
             App.setRoot("gamescene");
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("Erro ao resetar o jogo: " + e.getMessage());
         }
     }
 }

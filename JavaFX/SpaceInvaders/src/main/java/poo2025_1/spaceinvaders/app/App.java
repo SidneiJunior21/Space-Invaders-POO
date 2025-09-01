@@ -29,8 +29,8 @@ public class App extends Application {
         stage.setResizable(false);
         stage.setFullScreen(true);
 
-        stage.setFullScreenExitHint(""); // remove a mensagem
-        stage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH); // desativa ESC
+        stage.setFullScreenExitHint(""); 
+        stage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH); 
 
         stage.show();
     }

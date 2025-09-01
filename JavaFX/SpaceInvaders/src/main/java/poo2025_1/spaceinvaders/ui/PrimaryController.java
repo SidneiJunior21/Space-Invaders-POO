@@ -1,19 +1,23 @@
 package poo2025_1.spaceinvaders.ui;
 
 import java.io.IOException;
-import javafx.fxml.FXML;
+
 import javafx.application.Platform;
+import javafx.fxml.FXML;
 import poo2025_1.spaceinvaders.app.App;
 
+/**
+ * Controller da tela incial do jogo.
+ */
 public class PrimaryController {
 
     @FXML
-    private void switchToGame() throws IOException {
+    public void switchToGame() throws IOException {
         App.setRoot("gamescene");
     }
 
     @FXML
-    private void quitGame() {
+    public void quitGame() {
         Platform.exit();
     }
 }

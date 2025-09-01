@@ -12,16 +12,12 @@ import poo2025_1.spaceinvaders.core.GameEvent;
 
 
 /**
- * Classe responsável por encapsular a espaconave (jogador). <p>
+ * Classe responsavel por encapsular a espaconave (jogador). <p>
  * Contem todas as propriedades e metodos necessarios para o
  * funcionamento completo dos comportamentos da espaconave, como
  * mover-se e atirar.
  */
-public class SpaceShip {
-
-    private final Polygon spaceShipShape;
-
-    private boolean isAlive;
+public class SpaceShip extends Entity {
 
     private boolean movingRight = false;
 
@@ -40,9 +36,8 @@ public class SpaceShip {
     private final long shotCooldown = 80_000_000; // 80ms em nanos   
 
     public SpaceShip(Polygon spaceShipShape){
-        this.spaceShipShape = spaceShipShape;
+        super(spaceShipShape);
         this.projectiles = new ArrayList<>();
-        this.isAlive = true;
     }
 
     public List<Projectile> getProjectiles () {
@@ -69,18 +64,18 @@ public class SpaceShip {
      */
     public void moves (){
 
-        double currentX = spaceShipShape.getLayoutX();
+        double currentX = getShape().getLayoutX();
 
-        Bounds paneBounds = spaceShipShape.getParent().getLayoutBounds();
+        Bounds paneBounds = getShape().getParent().getLayoutBounds();
 
-        Bounds shipBounds = spaceShipShape.getBoundsInParent();
+        Bounds shipBounds = getShape().getBoundsInParent();
 
         if (movingRight) {
 
             boolean isInBounds = (shipBounds.getMaxX() + spaceShipSpeed) <= paneBounds.getWidth();
 
             if (isInBounds)
-                spaceShipShape.setLayoutX(currentX + spaceShipSpeed);
+                getShape().setLayoutX(currentX + spaceShipSpeed);
                 
         }
         if (movingLeft) {
@@ -88,7 +83,7 @@ public class SpaceShip {
             boolean isInBounds = (shipBounds.getMinX() - spaceShipSpeed) >= 0;
 
             if (isInBounds)
-                spaceShipShape.setLayoutX(currentX - spaceShipSpeed);
+                getShape().setLayoutX(currentX - spaceShipSpeed);
 
         }
     }
@@ -145,7 +140,7 @@ public class SpaceShip {
         projectileShape.setStyle("-fx-fill: yellow;");
         
         // Pega os limites visuais da nave na tela
-        Bounds shipBounds = spaceShipShape.getBoundsInParent();
+        Bounds shipBounds = getShape().getBoundsInParent();
 
         // posição X é o centro da nave
         // (borda esquerda + metade da largura) - (metade da largura do tiro)
@@ -168,30 +163,30 @@ public class SpaceShip {
      *            O projétil a ser desenhado
      */
     private void drawProjectile (Shape projectileShape){
-        if (spaceShipShape.getParent() instanceof Pane rootPane){
+        if (getShape().getParent() instanceof Pane rootPane){
             rootPane.getChildren().add(projectileShape);
         }
     }
 
     /**
-     * Lida com o fato de ter morrido
+     * Lida com o fato de ter morrido (colidido com um projetil).
      */
     public void handlesGettingShot (List<Projectile> enemyProjectiles) {
-        if (isAlive) {
+        if (isAlive()) {
 
             for (Projectile projectile : enemyProjectiles) {
 
-                if (projectile.checkCollisionWith(spaceShipShape)) {
+                if (projectile.checkCollisionWith(this)) {
                     
-                    isAlive = false;
+                    setAlive(false);
 
                     projectile.handleDeath();
                     
                 }
             }
 
-            if (!isAlive)
-                spaceShipShape.fireEvent(new GameEvent(GameEvent.GAME_OVER));
+            if (!isAlive())
+                getShape().fireEvent(new GameEvent(GameEvent.GAME_OVER));
         }
     }
 }

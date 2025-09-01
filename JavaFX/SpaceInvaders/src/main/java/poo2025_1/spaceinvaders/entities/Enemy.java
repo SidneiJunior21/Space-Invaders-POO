@@ -2,6 +2,10 @@ package poo2025_1.spaceinvaders.entities;
 
 import javafx.scene.shape.Shape;
 
+/**
+ * Entidade que encapsula um inimigo. Contém linha e coluna além
+ * dos atributos e metodos de Entidade.
+ */
 public class Enemy extends Entity{
 
     private final int row;

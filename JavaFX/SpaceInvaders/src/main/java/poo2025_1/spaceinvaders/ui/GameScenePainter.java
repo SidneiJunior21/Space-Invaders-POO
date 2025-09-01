@@ -1,6 +1,5 @@
 package poo2025_1.spaceinvaders.ui;
 
-import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.NumberBinding;
 import javafx.beans.value.ChangeListener;
@@ -11,9 +10,10 @@ import javafx.scene.shape.Polygon;
 import javafx.stage.Screen;
 
 /**
- *
+ * Classe responsavel por inicializar as Entidades estáticas e a espaconave 
+ * na cena inicial do jogo, com base no tamanho da tela.
  */
-public class GuiManager {
+public class GameScenePainter {
     
     private final Pane rootPane;
 
@@ -37,7 +37,7 @@ public class GuiManager {
 
     public Polygon getRightBunkerShape() { return this.rightBunkerShape; }
 
-    public GuiManager(Pane rootPane) {
+    public GameScenePainter(Pane rootPane) {
         
         this.rootPane = rootPane;
 
@@ -66,6 +66,9 @@ public class GuiManager {
         createBunkersShapes();
     }
 
+    /**
+     * Cria o Polygon da espaconave
+     */
     private void createSpaceShipShape () {
         spaceShipShape = new Polygon(
                 -22.4, 15.6,
@@ -76,6 +79,9 @@ public class GuiManager {
         spaceShipShape.setStroke(Color.TRANSPARENT); // Sem contorno
     }
 
+    /**
+     * Cria os Polygons dos bunkers
+     */
     private void createBunkersShapes() {
         double[] bunkerPoints = new double[]{
             -50.0, -45.6,
@@ -104,47 +110,50 @@ public class GuiManager {
         rightBunkerShape.setStroke(Color.BLACK);
     }
 
+    /**
+     * Vincula as proporcoes das entidades desenhadas ao tamanho da tela.
+     */
     private void setupBindings() {
-    ChangeListener<Number> sizeListener = new ChangeListener<Number>() {
-        @Override
-        public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-            if (rootPane.getWidth() > 0 && rootPane.getHeight() > 0) {
-                spaceShipShape.setLayoutX(rootPane.getWidth() / 2);
-                spaceShipShape.setLayoutY(rootPane.getHeight() - 50);
+        ChangeListener<Number> sizeListener = new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+                if (rootPane.getWidth() > 0 && rootPane.getHeight() > 0) {
+                    spaceShipShape.setLayoutX(rootPane.getWidth() / 2);
+                    spaceShipShape.setLayoutY(rootPane.getHeight() - 50);
 
-                rootPane.widthProperty().removeListener(this);
-                rootPane.heightProperty().removeListener(this);
+                    rootPane.widthProperty().removeListener(this);
+                    rootPane.heightProperty().removeListener(this);
+                }
             }
-        }
-    };
+        };
 
-    rootPane.widthProperty().addListener(sizeListener);
-    rootPane.heightProperty().addListener(sizeListener);
+        rootPane.widthProperty().addListener(sizeListener);
+        rootPane.heightProperty().addListener(sizeListener);
 
-    leftBunkerShape.layoutXProperty().bind(rootPane.widthProperty().multiply(0.20));
-    leftBunkerShape.layoutYProperty().bind(rootPane.heightProperty().subtract(150));
+        leftBunkerShape.layoutXProperty().bind(rootPane.widthProperty().multiply(0.20));
+        leftBunkerShape.layoutYProperty().bind(rootPane.heightProperty().subtract(150));
 
-    centerBunkerShape.layoutXProperty().bind(rootPane.widthProperty().multiply(0.50));
-    centerBunkerShape.layoutYProperty().bind(rootPane.heightProperty().subtract(150));
+        centerBunkerShape.layoutXProperty().bind(rootPane.widthProperty().multiply(0.50));
+        centerBunkerShape.layoutYProperty().bind(rootPane.heightProperty().subtract(150));
 
-    rightBunkerShape.layoutXProperty().bind(rootPane.widthProperty().multiply(0.80));
-    rightBunkerShape.layoutYProperty().bind(rootPane.heightProperty().subtract(150));
+        rightBunkerShape.layoutXProperty().bind(rootPane.widthProperty().multiply(0.80));
+        rightBunkerShape.layoutYProperty().bind(rootPane.heightProperty().subtract(150));
 
-    NumberBinding scaleBinding = Bindings.min(
-            rootPane.widthProperty().divide(BASE_WIDTH),
-            rootPane.heightProperty().divide(BASE_HEIGHT)
-    );
+        NumberBinding scaleBinding = Bindings.min(
+                rootPane.widthProperty().divide(BASE_WIDTH),
+                rootPane.heightProperty().divide(BASE_HEIGHT)
+        );
+   
+        spaceShipShape.scaleXProperty().bind(scaleBinding);
+        spaceShipShape.scaleYProperty().bind(scaleBinding);
+        
+        leftBunkerShape.scaleXProperty().bind(scaleBinding);
+        leftBunkerShape.scaleYProperty().bind(scaleBinding);
+        
+        centerBunkerShape.scaleXProperty().bind(scaleBinding);
+        centerBunkerShape.scaleYProperty().bind(scaleBinding);
 
-    spaceShipShape.scaleXProperty().bind(scaleBinding);
-    spaceShipShape.scaleYProperty().bind(scaleBinding);
-    
-    leftBunkerShape.scaleXProperty().bind(scaleBinding);
-    leftBunkerShape.scaleYProperty().bind(scaleBinding);
-    
-    centerBunkerShape.scaleXProperty().bind(scaleBinding);
-    centerBunkerShape.scaleYProperty().bind(scaleBinding);
-
-    rightBunkerShape.scaleXProperty().bind(scaleBinding);
-    rightBunkerShape.scaleYProperty().bind(scaleBinding);
+        rightBunkerShape.scaleXProperty().bind(scaleBinding);
+        rightBunkerShape.scaleYProperty().bind(scaleBinding);
     }
 }
