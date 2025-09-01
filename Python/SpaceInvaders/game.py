@@ -29,6 +29,7 @@ class Game:
         self.screen.fill(settings.BLACK)
         font_title = pygame.font.Font(None, 74)
         font_button = pygame.font.Font(None, 50)
+        font_controls = pygame.font.Font(None, 32)
 
         title_text = font_title.render("SPACE INVADERS", True, settings.WHITE)
         title_rect = title_text.get_rect(center=(self.screen_width / 2, self.screen_height * 0.3))
@@ -42,6 +43,21 @@ class Game:
         self.screen.blit(title_text, title_rect)
         self.screen.blit(start_text, start_rect)
         self.screen.blit(quit_text, quit_rect)
+
+        controls_lines = [
+            "Setas ou A/D : Mover",
+            "Espaço : Atirar",
+            "ESC : Pausar"
+        ]
+        
+        start_y = self.screen_height * 0.85 
+        line_spacing = 35
+
+        for i, line in enumerate(controls_lines):
+            line_surface = font_controls.render(line, True, settings.WHITE)
+            line_rect = line_surface.get_rect(centerx=self.screen_width / 2, top=start_y + (i * line_spacing))
+            self.screen.blit(line_surface, line_rect)
+
         pygame.display.flip()
         
         menu_active = True
