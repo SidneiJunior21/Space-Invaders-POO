@@ -51,10 +51,11 @@ public class GameController implements Initializable {
         GameScenePainter gameScenePainter = new GameScenePainter(rootPane);
 
         bunkers = new Bunker[] {
-            new Bunker(gameScenePainter.getLeftBunkerShape()), 
-            new Bunker(gameScenePainter.getCenterBunkerShape()), 
-            new Bunker(gameScenePainter.getRightBunkerShape())
+            new Bunker(gameScenePainter.getLeftBunkerShape(), rootPane), 
+            new Bunker(gameScenePainter.getCenterBunkerShape(), rootPane), 
+            new Bunker(gameScenePainter.getRightBunkerShape(), rootPane)
         };
+
 
         spaceShip = new SpaceShip(gameScenePainter.getSpaceShipShape());
 

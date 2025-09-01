@@ -2,7 +2,14 @@ package poo2025_1.spaceinvaders.entities;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
+import javafx.geometry.Bounds;
+
+import javafx.scene.shape.Shape;
+import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.Shape;
 
 /**
@@ -12,10 +19,13 @@ import javafx.scene.shape.Shape;
 public class Bunker extends Entity {
 
     private int hitPoints;
+    private final Pane rootPane;
+    private final Random random = new Random();
 
-    public Bunker (Shape shape){
+    public Bunker (Shape shape, Pane rootPane){
         super(shape);
         this.hitPoints = 10;
+        this.rootPane = rootPane;
     }
 
     /**
@@ -36,6 +46,8 @@ public class Bunker extends Entity {
                 if (collisionHappened) {
                     hitPoints--;
 
+                    createDamageMark(); 
+
                     projectile.handleDeath();
 
                     projectilesToRemove.add(projectile);
@@ -48,5 +60,23 @@ public class Bunker extends Entity {
                 handleDeath();
                 
         }
+    }
+
+    /**
+     * Cria um pequeno círculo preto em uma posição aleatória sobre o bunker
+     * para simular um dano de tiro.
+     */
+    private void createDamageMark() {
+        Circle damageMark = new Circle(4, Color.BLACK);
+
+        Bounds bunkerBounds = getShape().getBoundsInParent();
+
+        double randomX = bunkerBounds.getMinX() + random.nextDouble() * bunkerBounds.getWidth();
+        double randomY = bunkerBounds.getMinY() + random.nextDouble() * bunkerBounds.getHeight();
+
+        damageMark.setLayoutX(randomX);
+        damageMark.setLayoutY(randomY);
+
+        this.rootPane.getChildren().add(damageMark);
     }
 }
